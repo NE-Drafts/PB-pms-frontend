@@ -1,5 +1,5 @@
 
-const Dashboard = () => {
+const UserDashboard = () => {
   return (
     <main className={`w-full h-full flex flex-col`}>
         
@@ -7,4 +7,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default UserDashboard
