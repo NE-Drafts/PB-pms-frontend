@@ -6,10 +6,14 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { type Resolver, type SubmitHandler, useForm } from "react-hook-form";
 import type { LoginInputs } from "../types";
+import { ClipLoader } from "react-spinners";
+import { signIn } from "../services/auth";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const navigate = useNavigate();
   const [isViewPassword, setIsViewPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const loginSchema = yup.object({
     email: yup
       .string()
@@ -22,6 +26,7 @@ const Login = () => {
           "Password must have at least 6 characters, one symbol, one number, and one uppercase letter.",
       }),
   });
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -32,7 +37,14 @@ const Login = () => {
     mode: "onTouched",
   });
 
-  const onSubmit: SubmitHandler<LoginInputs> = async () => {};
+  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
+    await signIn({
+      email: data.email,
+      password: data.password,
+      dispatch,
+      setLoading: setIsLoading,
+    });
+  };
 
   return (
     <main
@@ -60,7 +72,7 @@ const Login = () => {
         <div className={`flex flex-col w-full items-start relative`}>
           <input
             {...register("password", { required: true })}
-            type="password"
+            type={isViewPassword ? "text" : "password"}
             className={`w-full px-[12px] py-[10px] rounded-[10px] border-[#00000066] border-solid border-[1px] outline-none`}
             placeholder="Password"
           />
@@ -85,9 +97,13 @@ const Login = () => {
 
         <button
           className={`bg-blue-500 text-[#fff] text-[15px] font-[500] py-[13px] rounded-[10px] mt-[15px]`}
-          onClick={() => handleSubmit(onSubmit)}
+          onClick={handleSubmit(onSubmit)}
         >
-          Login
+          {isLoading ? (
+            <ClipLoader size={25} color={"#fff"} loading={isLoading} />
+          ) : (
+            "Login"
+          )}
         </button>
 
         <p className={`text-center text-[12px]`}>

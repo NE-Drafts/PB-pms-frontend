@@ -6,14 +6,15 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { type Resolver, type SubmitHandler, useForm } from "react-hook-form";
 import type { SignupInputs } from "../types";
+import { signUp } from "../services/auth";
+import { ClipLoader } from "react-spinners";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [isViewPassword, setIsViewPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const signupSchema = yup.object({
-    names: yup
-      .string()
-      .min(3).required("Names are required"),
+    names: yup.string().min(3).required("Names are required"),
     email: yup
       .string()
       .email("This email is not valid")
@@ -39,7 +40,15 @@ const Signup = () => {
     mode: "onTouched",
   });
 
-  const onSubmit: SubmitHandler<SignupInputs> = async () => {};
+  const onSubmit: SubmitHandler<SignupInputs> = async (data) => {
+    await signUp({
+      names: data.names,
+      email: data.email,
+      phone: data.phone,
+      password: data.password,
+      setLoading: setIsLoading,
+    });
+  };
 
   return (
     <main
@@ -93,7 +102,7 @@ const Signup = () => {
         <div className={`flex flex-col w-full items-start relative`}>
           <input
             {...register("password", { required: true })}
-            type="password"
+            type={isViewPassword ? "text" : "password"}
             className={`w-full px-[12px] py-[10px] rounded-[10px] border-[#00000066] border-solid border-[1px] outline-none`}
             placeholder="Password"
           />
@@ -118,9 +127,13 @@ const Signup = () => {
 
         <button
           className={`bg-blue-500 text-[#fff] text-[15px] font-[500] py-[13px] rounded-[10px] mt-[15px]`}
-          onClick={() => handleSubmit(onSubmit)}
+          onClick={handleSubmit(onSubmit)}
         >
-          Sign Up
+          {isLoading ? (
+            <ClipLoader size={25} color="#fff" loading={isLoading} />
+          ) : (
+            "Sign Up"
+          )}
         </button>
 
         <p className={`text-center text-[12px]`}>

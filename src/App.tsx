@@ -1,23 +1,29 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/admin/Dashboard";
 import UserDashboard from "./pages/user/UserDashboard";
 import NotFound from "./pages/NotFound";
-import '@mantine/core/styles.css';
-
+import { Toaster } from "react-hot-toast";
+import "@mantine/core/styles.css";
+import Slots from "./pages/admin/Slots";
+import Payments from "./pages/admin/Payments";
 
 const App = () => {
-  const isAdmin = true;
+  const token = localStorage.getItem("token");
+  const isLoggedIn = Boolean(token);
 
   return (
     <BrowserRouter>
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route element={<Layout isAdmin={isAdmin} />}>
+        <Route element={isLoggedIn ? <Layout /> : <Navigate to={"/"} />}>
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/slots" element={<Slots />} />
+          <Route path="/admin/payments" element={<Payments />} />
           <Route path="/user/dashboard" element={<UserDashboard />} />
         </Route>
         <Route path="*" element={<NotFound />} />
