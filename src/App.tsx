@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import "@mantine/core/styles.css";
 import Slots from "./pages/admin/Slots";
 import Payments from "./pages/admin/Payments";
+import Vehicles from "./pages/user/Vehicles";
 
 const App = () => {
   const token = localStorage.getItem("token");
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/admin/slots" element={<Slots />} />
           <Route path="/admin/payments" element={<Payments />} />
           <Route path="/user/dashboard" element={<UserDashboard />} />
+          <Route path="/user/vehicles" element={<Vehicles />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

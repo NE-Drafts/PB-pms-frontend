@@ -13,7 +13,7 @@ export const getAll = async ({
     const res = await api.get("/parkingSession/all");
     return res?.data?.data?.parkingSessions;
   } catch (error: any) {
-    toast.error(`Fetch failed! ${error?.response?.data?.message}`);
+    return toast.error(`Fetch failed! ${error?.response?.data?.message}`);
   } finally {
     setLoading(false);
   }
@@ -34,7 +34,7 @@ export const createParkingSession = async ({
     toast.success("Parking session created successfully");
     window.location.reload()
   } catch (error: any) {
-    toast.error(`Create session failed! ${error?.response?.data?.message}`);
+    return toast.error(`Create session failed! ${error?.response?.data?.message}`);
   } finally {
     setIsLoading(false);
   }
@@ -47,8 +47,20 @@ export const exitParkingSession = async ({setIsLoading, plateNumber}: {setIsLoad
     toast.success("Vehicle exited successfully!")
     window.location.reload()
   } catch (error: any) {
-    toast.error(`Exit session failed! ${error?.response?.data?.message}`);
+    return toast.error(`Exit session failed! ${error?.response?.data?.message}`);
   }finally {
+    setIsLoading(false)
+  }
+}
+
+export const getUserParkingSession = async ({setIsLoading, userId}: {setIsLoading: Dispatch<SetStateAction<boolean>>, userId: string}) => {
+  try {
+    setIsLoading(true)
+    const res = await api.get(`/parkingSession/getUserSessions/${userId}`)
+    return res?.data?.data?.parkingSessions
+  } catch (error:any) {
+     return toast.error(`Exit session failed! ${error?.response?.data?.message}`);
+  }finally{
     setIsLoading(false)
   }
 }

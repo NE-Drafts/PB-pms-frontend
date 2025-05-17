@@ -1,16 +1,22 @@
 import { useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../store/store";
 
 const UserSidebar = () => {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const navItems = [
     { label: "Dashboard", pathMatch: "dashboard", action: () => {} },
-    { label: "Vehicles", pathMatch: "vehicles", action: () => {} },
+    {
+      label: "Vehicles",
+      pathMatch: "vehicles",
+      action: () => {
+        navigate("/user/vehicles");
+      },
+    },
     { label: "Payments", pathMatch: "payments", action: () => {} },
     {
       label: "Logout",

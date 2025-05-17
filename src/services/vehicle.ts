@@ -18,3 +18,21 @@ export const getAllVehicles = async ({
     setLoading(false);
   }
 };
+
+export const getUserVehicles = async ({
+  setIsLoading,
+  userId,
+}: {
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  userId: string;
+}) => {
+  try {
+    setIsLoading(true);
+    const res = await api.get(`/vehicle/getByUser/${userId}`);
+    return res?.data?.data?.vehicles;
+  } catch (error: any) {
+    toast.error(`Fetch failed! ${error?.response?.data?.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
