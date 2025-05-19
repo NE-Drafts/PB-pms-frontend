@@ -42,6 +42,9 @@ const PaymentsTable = () => {
     columnAccessor: "createdAt",
     direction: "desc",
   });
+  
+  // New state for paginated records
+  const [paginatedData, setPaginatedData] = useState<Payment[]>([]);
 
   // Fetch payments data
   useEffect(() => {
@@ -165,6 +168,20 @@ const PaymentsTable = () => {
     setFilteredPayments(filtered);
     setTotalRecords(filtered.length);
   }, [payments, searchQuery, statusFilter, sortStatus, dataFetched]);
+
+  // Apply pagination to filtered data
+  useEffect(() => {
+    if (filteredPayments.length === 0) {
+      setPaginatedData([]);
+      return;
+    }
+    
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const slicedData = filteredPayments.slice(startIndex, endIndex);
+    
+    setPaginatedData(slicedData);
+  }, [filteredPayments, page, pageSize]);
 
   // Format date function
   const formatDate = (date: string | number | Date) => {
@@ -349,7 +366,7 @@ const PaymentsTable = () => {
         withColumnBorders
         striped
         highlightOnHover
-        records={filteredPayments}
+        records={paginatedData}
         columns={columns}
         noRecordsText="No payments found"
         loadingText="Loading payments..."
@@ -357,7 +374,10 @@ const PaymentsTable = () => {
         page={page}
         onPageChange={setPage}
         recordsPerPage={pageSize}
-        onRecordsPerPageChange={setPageSize}
+        onRecordsPerPageChange={(value) => {
+          setPageSize(value);
+          setPage(1); // Reset to first page when changing page size
+        }}
         totalRecords={totalRecords}
         recordsPerPageOptions={[10, 25, 50, 100]}
         sortStatus={sortStatus}
