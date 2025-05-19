@@ -58,6 +58,8 @@ const ParkingSessionsTable = () => {
   const [selectedSession, setSelectedSession] = useState<ParkingSession | null>(
     null
   );
+  // New state to hold paginated data
+  const [paginatedData, setPaginatedData] = useState<ParkingSession[]>([]);
 
   // Fetch parking sessions data
   useEffect(() => {
@@ -171,6 +173,13 @@ const ParkingSessionsTable = () => {
     setTotalRecords(filtered.length);
     setLoading(false);
   }, [sessions, searchQuery, statusFilter, sortStatus, dataFetched]);
+
+  // Apply pagination to the filtered data
+  useEffect(() => {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setPaginatedData(filteredSessions.slice(startIndex, endIndex));
+  }, [filteredSessions, page, pageSize]);
 
   // Format date function
   const formatDate = (date: Date | null): string => {
@@ -386,27 +395,35 @@ const ParkingSessionsTable = () => {
       </Paper>
 
       {/* DataTable */}
-      <DataTable
-        className="w-full"
-        borderRadius="sm"
-        shadow="sm"
-        withTableBorder
-        columns={columns}
-        records={filteredSessions}
-        fetching={loading}
-        highlightOnHover
-        verticalSpacing="sm"
-        noRecordsText="No parking sessions found"
-        loadingText="Loading parking sessions..."
-        page={page}
-        recordsPerPage={pageSize}
-        totalRecords={totalRecords}
-        onPageChange={setPage}
-        onRecordsPerPageChange={setPageSize}
-        recordsPerPageOptions={[10, 25, 50, 100]}
-        sortStatus={sortStatus}
-        onSortStatusChange={setSortStatus}
-      />
+      {!loading && filteredSessions.length === 0 ? (
+        <Paper p="md" withBorder>
+          <Text ta="center" color="dimmed">
+            No parking sessions found
+          </Text>
+        </Paper>
+      ) : (
+        <DataTable
+          className="w-full h-full overflow-y-scroll"
+          borderRadius="sm"
+          shadow="sm"
+          withTableBorder
+          columns={columns}
+          records={paginatedData} // Use paginated data here instead of filteredSessions
+          fetching={loading}
+          highlightOnHover
+          verticalSpacing="sm"
+          noRecordsText="No parking sessions found"
+          loadingText="Loading parking sessions..."
+          page={page}
+          recordsPerPage={pageSize}
+          totalRecords={totalRecords}
+          onPageChange={setPage}
+          onRecordsPerPageChange={setPageSize}
+          recordsPerPageOptions={[10, 25, 50, 100]}
+          sortStatus={sortStatus}
+          onSortStatusChange={setSortStatus}
+        />
+      )}
 
       {/* View Session Modal */}
       <Modal

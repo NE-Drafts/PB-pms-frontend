@@ -39,6 +39,8 @@ const SlotsTable = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<ParkingSlot | null>(null);
+  // New state for paginated data
+  const [paginatedRecords, setPaginatedRecords] = useState<ParkingSlot[]>([]);
   const [sortStatus, setSortStatus] = useState<
     DataTableSortStatus<ParkingSlot>
   >({
@@ -135,6 +137,13 @@ const SlotsTable = () => {
     setFilteredRecords(filtered);
     setTotalRecords(filtered.length);
   }, [records, searchQuery, statusFilter, sortStatus, dataFetched]);
+
+  // Apply pagination to filtered records
+  useEffect(() => {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setPaginatedRecords(filteredRecords.slice(startIndex, endIndex));
+  }, [filteredRecords, page, pageSize]);
 
   // Get vehicle type icon
   const getVehicleTypeIcon = (type: string) => {
@@ -281,7 +290,7 @@ const SlotsTable = () => {
         withColumnBorders
         striped
         highlightOnHover
-        records={filteredRecords}
+        records={paginatedRecords} // Use paginated records instead of all filtered records
         columns={columns}
         noRecordsText="No parking slots found"
         loadingText="Loading parking slots..."
